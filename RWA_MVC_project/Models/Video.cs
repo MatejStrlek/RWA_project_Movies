@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace RWA_MVC_project.Models;
 
@@ -9,12 +10,15 @@ public partial class Video
 
     public DateTime CreatedAt { get; set; }
 
+    [Required(ErrorMessage = "Video name is required")]
     public string Name { get; set; } = null!;
 
     public string? Description { get; set; }
 
+    [Required(ErrorMessage = "Video genre is required")]
     public int GenreId { get; set; }
 
+    [Required(ErrorMessage = "Video length is required")]
     public int TotalSeconds { get; set; }
 
     public string? StreamingUrl { get; set; }
