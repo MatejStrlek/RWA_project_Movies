@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RWA_MVC_project", "RWA_MVC_project\RWA_MVC_project.csproj", "{5EFECE26-6037-4B33-B741-F9935FC58E79}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RWA_API_project", "RWA_API_project\RWA_API_project.csproj", "{33F70B5E-FBC6-4FF1-B7EA-CB4AE563909B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5EFECE26-6037-4B33-B741-F9935FC58E79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EFECE26-6037-4B33-B741-F9935FC58E79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EFECE26-6037-4B33-B741-F9935FC58E79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EFECE26-6037-4B33-B741-F9935FC58E79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33F70B5E-FBC6-4FF1-B7EA-CB4AE563909B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33F70B5E-FBC6-4FF1-B7EA-CB4AE563909B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33F70B5E-FBC6-4FF1-B7EA-CB4AE563909B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33F70B5E-FBC6-4FF1-B7EA-CB4AE563909B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2ADE6865-2484-4BAB-97E6-B348AFB61EB9}
+	EndGlobalSection
+EndGlobal
