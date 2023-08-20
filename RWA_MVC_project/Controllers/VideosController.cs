@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RWA_MVC_project.Models;
@@ -48,7 +44,7 @@ namespace RWA_MVC_project.Controllers
         // GET: Videos/Create
         public IActionResult Create()
         {
-            ViewData["GenreId"] = new SelectList(_context.Genres, "Id", "Id");
+            ViewData["GenreId"] = new SelectList(_context.Genres, "Id", "Name");
             ViewData["ImageId"] = new SelectList(_context.Images, "Id", "Id");
             return View();
         }
@@ -72,6 +68,20 @@ namespace RWA_MVC_project.Controllers
             return View(video);
         }
 
+        public IActionResult Search(string searchText)
+        {
+            var videos = _context.Videos
+                .Include(v => v.Genre)
+                .Include(v => v.Image)
+                .Include(v => v.VideoTags)
+                .Where(v => v.Name.Contains(searchText) ||
+                v.Genre.Name.Contains(searchText) ||
+                v.VideoTags.Any(vt => vt.Tag.Name.Contains(searchText))
+                );
+
+            return View("Index", videos);
+        }
+
         // GET: Videos/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -85,7 +95,7 @@ namespace RWA_MVC_project.Controllers
             {
                 return NotFound();
             }
-            ViewData["GenreId"] = new SelectList(_context.Genres, "Id", "Id", video.GenreId);
+            ViewData["GenreId"] = new SelectList(_context.Genres, "Id", "Name", video.GenreId);
             ViewData["ImageId"] = new SelectList(_context.Images, "Id", "Id", video.ImageId);
             return View(video);
         }

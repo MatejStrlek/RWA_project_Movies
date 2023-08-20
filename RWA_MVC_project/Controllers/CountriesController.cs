@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RWA_MVC_project.Models;
 
@@ -64,6 +59,15 @@ namespace RWA_MVC_project.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(country);
+        }
+
+        public IActionResult Search(string searchText)
+        {
+            var countries = _context.Countries
+                .Where(c => c.Name.Contains(searchText) ||
+                c.Code.Contains(searchText));
+
+            return View("Index", countries);
         }
 
         // GET: Countries/Edit/5

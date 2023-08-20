@@ -4,7 +4,10 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<form asp-controller="Countries" asp-action="Search" method="get">
+    <input type="search" name="searchText" placeholder="Search..." />
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
 
 <p>
     <a asp-action="Create">Create New</a>

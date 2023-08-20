@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RWA_MVC_project.Models;
 
@@ -64,6 +59,15 @@ namespace RWA_MVC_project.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(genre);
+        }
+
+        public IActionResult Search(string searchText)
+        {
+            var genres = _context.Genres
+                .Where(g => g.Name.Contains(searchText) ||
+                g.Description.Contains(searchText));
+
+            return View("Index", genres);
         }
 
         // GET: Genres/Edit/5

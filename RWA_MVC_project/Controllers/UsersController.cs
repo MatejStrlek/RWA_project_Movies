@@ -47,7 +47,7 @@ namespace RWA_MVC_project.Controllers
         // GET: Users/Create
         public IActionResult Create()
         {
-            ViewData["CountryOfResidenceId"] = new SelectList(_context.Countries, "Id", "Id");
+            ViewData["CountryOfResidenceId"] = new SelectList(_context.Countries, "Id", "Name");
             return View();
         }
 
@@ -58,6 +58,8 @@ namespace RWA_MVC_project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,CreatedAt,DeletedAt,Username,FirstName,LastName,Email,PwdHash,PwdSalt,Phone,IsConfirmed,SecurityToken,CountryOfResidenceId")] User user)
         {
+
+            ModelState.Remove("CountryOfResidence");
             if (ModelState.IsValid)
             {
                 _context.Add(user);
@@ -66,6 +68,20 @@ namespace RWA_MVC_project.Controllers
             }
             ViewData["CountryOfResidenceId"] = new SelectList(_context.Countries, "Id", "Id", user.CountryOfResidenceId);
             return View(user);
+        }
+
+        public IActionResult Search(string searchText)
+        {
+            var users = _context.Users
+                .Include(u => u.CountryOfResidence)
+                .Where(u => u.Username.Contains(searchText) ||
+                u.FirstName.Contains(searchText) ||
+                u.LastName.Contains(searchText) ||
+                u.Email.Contains(searchText) ||
+                u.Phone!.Contains(searchText) ||
+                u.CountryOfResidence.Name.Contains(searchText));
+
+            return View("Index", users);
         }
 
         // GET: Users/Edit/5
@@ -81,7 +97,7 @@ namespace RWA_MVC_project.Controllers
             {
                 return NotFound();
             }
-            ViewData["CountryOfResidenceId"] = new SelectList(_context.Countries, "Id", "Id", user.CountryOfResidenceId);
+            ViewData["CountryOfResidenceId"] = new SelectList(_context.Countries, "Id", "Name", user.CountryOfResidenceId);
             return View(user);
         }
 

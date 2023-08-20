@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RWA_MVC_project.Models;
@@ -48,8 +44,8 @@ namespace RWA_MVC_project.Controllers
         // GET: VideoTags/Create
         public IActionResult Create()
         {
-            ViewData["TagId"] = new SelectList(_context.Tags, "Id", "Id");
-            ViewData["VideoId"] = new SelectList(_context.Videos, "Id", "Id");
+            ViewData["TagId"] = new SelectList(_context.Tags, "Id", "Name");
+            ViewData["VideoId"] = new SelectList(_context.Videos, "Id", "Name");
             return View();
         }
 
@@ -60,6 +56,9 @@ namespace RWA_MVC_project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,VideoId,TagId")] VideoTag videoTag)
         {
+
+            ModelState.Remove("Tag");
+            ModelState.Remove("Video");
             if (ModelState.IsValid)
             {
                 _context.Add(videoTag);
@@ -84,8 +83,8 @@ namespace RWA_MVC_project.Controllers
             {
                 return NotFound();
             }
-            ViewData["TagId"] = new SelectList(_context.Tags, "Id", "Id", videoTag.TagId);
-            ViewData["VideoId"] = new SelectList(_context.Videos, "Id", "Id", videoTag.VideoId);
+            ViewData["TagId"] = new SelectList(_context.Tags, "Id", "Name", videoTag.TagId);
+            ViewData["VideoId"] = new SelectList(_context.Videos, "Id", "Name", videoTag.VideoId);
             return View(videoTag);
         }
 
