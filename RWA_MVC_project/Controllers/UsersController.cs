@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Plugins;
+using RWA_MVC_project.Filters;
 using RWA_MVC_project.Models;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace RWA_MVC_project.Controllers
 {
+    [TypeFilter(typeof(LoginFilter))]
     public class UsersController : Controller
     {
         private readonly RwaMoviesContext _context;
@@ -51,21 +52,40 @@ namespace RWA_MVC_project.Controllers
             return View();
         }
 
-        // POST: Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CreatedAt,DeletedAt,Username,FirstName,LastName,Email,PwdHash,PwdSalt,Phone,IsConfirmed,SecurityToken,CountryOfResidenceId")] User user)
+        public async Task<IActionResult> Create(LoginUser user)
         {
+            ModelState.Clear();
 
-            ModelState.Remove("CountryOfResidence");
+            byte[] saltBytes = Salt();
+            string saltString = Convert.ToBase64String(saltBytes);
+
+            string randomToken = GenerateRandomToken();
+
+            User userForDb = new User
+            {
+                CreatedAt = DateTime.Now,
+                DeletedAt = null,
+                Username = user.Username,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                PwdHash = HashPwd(user.Password, saltBytes),
+                PwdSalt = saltString,
+                Phone = user.Phone,
+                IsConfirmed = false,
+                SecurityToken = randomToken,
+                CountryOfResidenceId = user.CountryOfResidenceId
+            };
+
             if (ModelState.IsValid)
             {
-                _context.Add(user);
+                _context.Add(userForDb);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return Redirect("/Users");
             }
+
             ViewData["CountryOfResidenceId"] = new SelectList(_context.Countries, "Id", "Id", user.CountryOfResidenceId);
             return View(user);
         }
@@ -113,6 +133,15 @@ namespace RWA_MVC_project.Controllers
                 return NotFound();
             }
 
+            var existingUser = await _context.Users.FindAsync(id);
+            _context.Entry(existingUser).State = EntityState.Detached;
+
+            user.PwdHash = existingUser.PwdHash;
+            user.PwdSalt = existingUser.PwdSalt;
+
+            ModelState.Remove("CountryOfResidence");
+            ModelState.Remove("PwdHash");
+            ModelState.Remove("PwdSalt");
             if (ModelState.IsValid)
             {
                 try
@@ -178,6 +207,49 @@ namespace RWA_MVC_project.Controllers
         private bool UserExists(int id)
         {
           return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
+        }       
+
+        private string GenerateRandomToken()
+        {
+            int length = 6;
+            const string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+            Random random = new Random();
+
+            char[] result = new char[length];
+            for (int i = 0; i < length; i++)
+            {
+                result[i] = chars[random.Next(chars.Length)];
+            }
+
+            return new string(result);
+        }
+
+        private byte[] Salt()
+        {
+            int saltSize = 16;
+            byte[] saltBytes = new byte[saltSize];
+
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(saltBytes);
+            }
+
+            return saltBytes;
+        }
+
+        private string HashPwd(string password, byte[] saltBytes)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+                byte[] combinedBytes = new byte[passwordBytes.Length + saltBytes.Length];
+
+                Buffer.BlockCopy(passwordBytes, 0, combinedBytes, 0, passwordBytes.Length);
+                Buffer.BlockCopy(saltBytes, 0, combinedBytes, passwordBytes.Length, saltBytes.Length);
+
+                byte[] hashBytes = sha256.ComputeHash(combinedBytes);
+                return Convert.ToBase64String(hashBytes);
+            }
         }
     }
 }

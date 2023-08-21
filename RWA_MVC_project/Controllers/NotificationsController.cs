@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RWA_MVC_project.Filters;
 using RWA_MVC_project.Models;
 
 namespace RWA_MVC_project.Controllers
 {
+    [TypeFilter(typeof(LoginFilter))]
     public class NotificationsController : Controller
     {
         private readonly RwaMoviesContext _context;

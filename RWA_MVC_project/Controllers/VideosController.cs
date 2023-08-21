@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using RWA_MVC_project.Filters;
 using RWA_MVC_project.Models;
 
 namespace RWA_MVC_project.Controllers
 {
+    [TypeFilter(typeof(LoginFilter))]
     public class VideosController : Controller
     {
         private readonly RwaMoviesContext _context;
@@ -77,7 +79,7 @@ namespace RWA_MVC_project.Controllers
                 .Where(v => v.Name.Contains(searchText) ||
                 v.Genre.Name.Contains(searchText) ||
                 v.VideoTags.Any(vt => vt.Tag.Name.Contains(searchText))
-                );
+                );          
 
             return View("Index", videos);
         }

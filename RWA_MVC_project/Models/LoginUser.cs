@@ -1,5 +1,4 @@
-﻿using NuGet.Protocol.Core.Types;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace RWA_MVC_project.Models
 {

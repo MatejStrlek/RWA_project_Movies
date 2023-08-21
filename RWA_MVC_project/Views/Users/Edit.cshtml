@@ -44,29 +44,9 @@
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PwdHash" class="control-label"></label>
-                <input asp-for="PwdHash" class="form-control" />
-                <span asp-validation-for="PwdHash" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PwdSalt" class="control-label"></label>
-                <input asp-for="PwdSalt" class="form-control" />
-                <span asp-validation-for="PwdSalt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="Phone" class="control-label"></label>
                 <input asp-for="Phone" class="form-control" />
                 <span asp-validation-for="Phone" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsConfirmed" /> @Html.DisplayNameFor(model => model.IsConfirmed)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="SecurityToken" class="control-label"></label>
-                <input asp-for="SecurityToken" class="form-control" />
-                <span asp-validation-for="SecurityToken" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="CountryOfResidenceId" class="control-label"></label>

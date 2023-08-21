@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using RWA_MVC_project.Filters;
 using RWA_MVC_project.Models;
 
 namespace RWA_MVC_project.Controllers
 {
+    [TypeFilter(typeof(LoginFilter))]
     public class VideoTagsController : Controller
-    {
+    {     
         private readonly RwaMoviesContext _context;
 
         public VideoTagsController(RwaMoviesContext context)

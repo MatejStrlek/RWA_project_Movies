@@ -1,11 +1,9 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using RWA_MVC_project.Filters;
 using RWA_MVC_project.Models;
 
 namespace RWA_MVC_project.Controllers
@@ -19,20 +17,42 @@ namespace RWA_MVC_project.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Login(LoginUser user)
+        public async Task<IActionResult> Login(LoginUser userViewModel)
         {
             ModelState.Clear();
-            var userFromDb = await _context.Users.FirstOrDefaultAsync(u => u.Username == user.Username);
+            var userFromDb = await _context.Users.FirstOrDefaultAsync(u => u.Username == userViewModel.Username);
 
             if (userFromDb != null)
             {
-                if (userFromDb.PwdHash == user.Password)
+                string hashed = HashPwd(userViewModel.Password, Convert.FromBase64String(userFromDb.PwdSalt));
+
+                if (hashed == userFromDb.PwdHash)
                 {
+                    string cookieUsername = userFromDb.Username;
+
+                    CookieOptions cookieOptions = new CookieOptions
+                    {
+                        Expires = DateTime.Now.AddDays(1),
+                        HttpOnly = true
+                    };
+                    Response.Cookies.Append("username", cookieUsername, cookieOptions);
+
                     return Redirect("/Videos");
+                }
+                else
+                {
+                    ModelState.AddModelError("Password", "Wrong password");
                 }
             }
 
-            return Redirect("/Videos");
+            return View(nameof(Login));
+        }
+
+        [TypeFilter(typeof(LoginFilter))]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("username");
+            return Redirect("/Account/Login");
         }
 
         public IActionResult Register()

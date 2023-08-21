@@ -3,6 +3,8 @@ using RWA_MVC_project.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddDbContext<RwaMoviesContext>(options =>
 {
     //options.UseSqlServer(builder.Configuration.GetConnectionString("RwaMovies"));
