@@ -42,6 +42,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Images/Create
+        [TypeFilter(typeof(AdministratorFilter))]
         public IActionResult Create()
         {
             return View();
@@ -52,6 +53,7 @@ namespace RWA_MVC_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Create([Bind("Id,Content")] Image image)
         {
             if (ModelState.IsValid)
@@ -64,6 +66,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Images/Edit/5
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Images == null)
@@ -84,6 +87,7 @@ namespace RWA_MVC_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Content")] Image image)
         {
             if (id != image.Id)
@@ -115,6 +119,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Images/Delete/5
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Images == null)
@@ -135,6 +140,7 @@ namespace RWA_MVC_project.Controllers
         // POST: Images/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Images == null)

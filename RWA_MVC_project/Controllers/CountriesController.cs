@@ -42,6 +42,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Countries/Create
+        [TypeFilter(typeof(AdministratorFilter))]
         public IActionResult Create()
         {
             return View();
@@ -52,6 +53,7 @@ namespace RWA_MVC_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Create([Bind("Id,Code,Name")] Country country)
         {
             if (ModelState.IsValid)
@@ -73,6 +75,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Countries/Edit/5
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Countries == null)
@@ -93,6 +96,7 @@ namespace RWA_MVC_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Code,Name")] Country country)
         {
             if (id != country.Id)
@@ -124,6 +128,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Countries/Delete/5
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Countries == null)
@@ -144,6 +149,7 @@ namespace RWA_MVC_project.Controllers
         // POST: Countries/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Countries == null)

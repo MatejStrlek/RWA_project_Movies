@@ -44,6 +44,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Videos/Create
+        [TypeFilter(typeof(AdministratorFilter))]
         public IActionResult Create()
         {
             ViewData["GenreId"] = new SelectList(_context.Genres, "Id", "Name");
@@ -56,6 +57,7 @@ namespace RWA_MVC_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Create([Bind("Id,CreatedAt,Name,Description,GenreId,TotalSeconds,StreamingUrl,ImageId")] Video video)
         {
             ModelState.Remove("Genre");
@@ -85,6 +87,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Videos/Edit/5
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Videos == null)
@@ -107,6 +110,7 @@ namespace RWA_MVC_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Edit(int id, [Bind("Id,CreatedAt,Name,Description,GenreId,TotalSeconds,StreamingUrl,ImageId")] Video video)
         {
             if (id != video.Id)
@@ -141,6 +145,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Videos/Delete/5
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Videos == null)
@@ -163,6 +168,7 @@ namespace RWA_MVC_project.Controllers
         // POST: Videos/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Videos == null)

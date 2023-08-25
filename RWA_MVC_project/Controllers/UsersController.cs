@@ -20,6 +20,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Users
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Index()
         {
             var rwaMoviesContext = _context.Users.Include(u => u.CountryOfResidence);
@@ -46,6 +47,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Users/Create
+        [TypeFilter(typeof(AdministratorFilter))]
         public IActionResult Create()
         {
             ViewData["CountryOfResidenceId"] = new SelectList(_context.Countries, "Id", "Name");
@@ -54,6 +56,7 @@ namespace RWA_MVC_project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Create(LoginUser user)
         {
             ModelState.Clear();
@@ -90,6 +93,7 @@ namespace RWA_MVC_project.Controllers
             return View(user);
         }
 
+        [TypeFilter(typeof(AdministratorFilter))]
         public IActionResult Search(string searchText)
         {
             var users = _context.Users
@@ -105,6 +109,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Users/Edit/5
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Users == null)
@@ -126,6 +131,7 @@ namespace RWA_MVC_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Edit(int id, [Bind("Id,CreatedAt,DeletedAt,Username,FirstName,LastName,Email,PwdHash,PwdSalt,Phone,IsConfirmed,SecurityToken,CountryOfResidenceId")] User user)
         {
             if (id != user.Id)
@@ -167,6 +173,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Users/Delete/5
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Users == null)
@@ -188,6 +195,7 @@ namespace RWA_MVC_project.Controllers
         // POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Users == null)

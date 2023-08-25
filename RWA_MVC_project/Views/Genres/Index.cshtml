@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Index";
+    bool isAdmin = HttpContextAccessor.HttpContext.Request.Cookies["username"] == "admin";
 }
 
 <form asp-controller="Genres" asp-action="Search" method="get">
@@ -9,9 +10,13 @@
     <button type="submit" class="btn btn-primary">Search</button>
 </form>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (isAdmin)
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
+
 <table class="table">
     <thead>
         <tr>
@@ -34,9 +39,11 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                @if(isAdmin){
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                }
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
             </td>
         </tr>
 }

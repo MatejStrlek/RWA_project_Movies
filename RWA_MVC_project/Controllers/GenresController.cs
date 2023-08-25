@@ -42,6 +42,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Genres/Create
+        [TypeFilter(typeof(AdministratorFilter))]
         public IActionResult Create()
         {
             return View();
@@ -52,6 +53,7 @@ namespace RWA_MVC_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Create([Bind("Id,Name,Description")] Genre genre)
         {
             if (ModelState.IsValid)
@@ -73,6 +75,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Genres/Edit/5
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Genres == null)
@@ -93,6 +96,7 @@ namespace RWA_MVC_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description")] Genre genre)
         {
             if (id != genre.Id)
@@ -124,6 +128,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Genres/Delete/5
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Genres == null)
@@ -144,6 +149,7 @@ namespace RWA_MVC_project.Controllers
         // POST: Genres/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Genres == null)

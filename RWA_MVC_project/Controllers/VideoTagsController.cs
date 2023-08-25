@@ -44,6 +44,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: VideoTags/Create
+        [TypeFilter(typeof(AdministratorFilter))]
         public IActionResult Create()
         {
             ViewData["TagId"] = new SelectList(_context.Tags, "Id", "Name");
@@ -56,6 +57,7 @@ namespace RWA_MVC_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Create([Bind("Id,VideoId,TagId")] VideoTag videoTag)
         {
 
@@ -73,6 +75,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: VideoTags/Edit/5
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.VideoTags == null)
@@ -95,6 +98,7 @@ namespace RWA_MVC_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Edit(int id, [Bind("Id,VideoId,TagId")] VideoTag videoTag)
         {
             if (id != videoTag.Id)
@@ -128,6 +132,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: VideoTags/Delete/5
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.VideoTags == null)
@@ -150,6 +155,7 @@ namespace RWA_MVC_project.Controllers
         // POST: VideoTags/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.VideoTags == null)

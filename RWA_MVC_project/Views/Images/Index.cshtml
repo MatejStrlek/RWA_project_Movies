@@ -2,11 +2,16 @@
 
 @{
     ViewData["Title"] = "Index";
+    bool isAdmin = HttpContextAccessor.HttpContext.Request.Cookies["username"] == "admin";
 }
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (isAdmin)
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
+
 <table class="table">
     <thead>
         <tr>
@@ -23,9 +28,11 @@
                 @Html.DisplayFor(modelItem => item.Content)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                @if(isAdmin){
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>                
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                }
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
             </td>
         </tr>
 }

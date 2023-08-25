@@ -42,6 +42,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Tags/Create
+        [TypeFilter(typeof(AdministratorFilter))]
         public IActionResult Create()
         {
             return View();
@@ -52,6 +53,7 @@ namespace RWA_MVC_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Create([Bind("Id,Name")] Tag tag)
         {
             if (ModelState.IsValid)
@@ -72,6 +74,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Tags/Edit/5
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Tags == null)
@@ -92,6 +95,7 @@ namespace RWA_MVC_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Tag tag)
         {
             if (id != tag.Id)
@@ -123,6 +127,7 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Tags/Delete/5
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Tags == null)
@@ -143,6 +148,7 @@ namespace RWA_MVC_project.Controllers
         // POST: Tags/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Tags == null)
