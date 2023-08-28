@@ -55,12 +55,66 @@ namespace RWA_MVC_project.Controllers
             return Redirect("/Account/Login");
         }
 
+        public IActionResult Profile()
+        {
+            string username = Request.Cookies["username"];
+            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+
+            return RedirectToAction("Details", "Users", new { id = user.Id });
+        }
+
+        public IActionResult ChangePass()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePass(LoginUser user)
+        {
+            ModelState.Clear();
+            string username = Request.Cookies["username"];
+            var userFromDb = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+
+            if (userFromDb != null)
+            {
+                string hashed = HashPwd(user.Password, Convert.FromBase64String(userFromDb.PwdSalt));
+
+                if (hashed != userFromDb.PwdHash)
+                {
+                    if (user.Password == user.ConfirmPassword)
+                    {
+                        byte[] saltBytes = Salt();
+                        string saltString = Convert.ToBase64String(saltBytes);
+
+                        userFromDb.PwdHash = HashPwd(user.Password, saltBytes);
+                        userFromDb.PwdSalt = saltString;
+
+                        _context.Update(userFromDb);
+                        await _context.SaveChangesAsync();
+
+                        return RedirectToAction("Index", "Videos");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Passwords don't match");
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Wrong password");
+                }
+            }
+
+            return View(nameof(ChangePass));
+        }
+
         public IActionResult Register()
         {
             ViewData["CountryOfResidenceId"] = new SelectList(_context.Countries, "Id", "Name");
 
             return View();
-        }
+        }       
 
         [HttpPost]
         [ValidateAntiForgeryToken]
