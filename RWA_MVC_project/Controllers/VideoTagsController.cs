@@ -158,18 +158,26 @@ namespace RWA_MVC_project.Controllers
         [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.VideoTags == null)
+            try
             {
-                return Problem("Entity set 'RwaMoviesContext.VideoTags'  is null.");
+                if (_context.VideoTags == null)
+                {
+                    return Problem("Entity set 'RwaMoviesContext.VideoTags'  is null.");
+                }
+                var videoTag = await _context.VideoTags.FindAsync(id);
+                if (videoTag != null)
+                {
+                    _context.VideoTags.Remove(videoTag);
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            var videoTag = await _context.VideoTags.FindAsync(id);
-            if (videoTag != null)
+            catch (Exception ex)
             {
-                _context.VideoTags.Remove(videoTag);
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Index");
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool VideoTagExists(int id)

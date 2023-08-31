@@ -152,18 +152,26 @@ namespace RWA_MVC_project.Controllers
         [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Genres == null)
+            try
             {
-                return Problem("Entity set 'RwaMoviesContext.Genres'  is null.");
+                if (_context.Genres == null)
+                {
+                    return Problem("Entity set 'RwaMoviesContext.Genres'  is null.");
+                }
+                var genre = await _context.Genres.FindAsync(id);
+                if (genre != null)
+                {
+                    _context.Genres.Remove(genre);
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            var genre = await _context.Genres.FindAsync(id);
-            if (genre != null)
+            catch (Exception ex)
             {
-                _context.Genres.Remove(genre);
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Index");
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool GenreExists(int id)

@@ -152,18 +152,26 @@ namespace RWA_MVC_project.Controllers
         [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Countries == null)
+            try
             {
-                return Problem("Entity set 'RwaMoviesContext.Countries'  is null.");
+                if (_context.Countries == null)
+                {
+                    return Problem("Entity set 'RwaMoviesContext.Countries'  is null.");
+                }
+                var country = await _context.Countries.FindAsync(id);
+                if (country != null)
+                {
+                    _context.Countries.Remove(country);
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            var country = await _context.Countries.FindAsync(id);
-            if (country != null)
+            catch (Exception ex)
             {
-                _context.Countries.Remove(country);
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Index");
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool CountryExists(int id)

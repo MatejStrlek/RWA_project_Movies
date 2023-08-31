@@ -45,6 +45,9 @@ namespace RWA_MVC_project.Controllers
         [TypeFilter(typeof(AdministratorFilter))]
         public IActionResult Create()
         {
+            var maxImageId = _context.Images.Max(i => i.Id);
+            ViewData["NextImageId"] = maxImageId + 1;
+
             return View();
         }
 
@@ -143,18 +146,26 @@ namespace RWA_MVC_project.Controllers
         [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Images == null)
+            try
             {
-                return Problem("Entity set 'RwaMoviesContext.Images'  is null.");
+                if (_context.Images == null)
+                {
+                    return Problem("Entity set 'RwaMoviesContext.Images'  is null.");
+                }
+                var image = await _context.Images.FindAsync(id);
+                if (image != null)
+                {
+                    _context.Images.Remove(image);
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            var image = await _context.Images.FindAsync(id);
-            if (image != null)
+            catch (Exception ex)
             {
-                _context.Images.Remove(image);
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Index");
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool ImageExists(int id)

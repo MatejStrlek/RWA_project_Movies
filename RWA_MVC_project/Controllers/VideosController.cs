@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PagedList;
 using RWA_MVC_project.Filters;
 using RWA_MVC_project.Models;
 
@@ -17,10 +18,19 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Videos
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page)
         {
-            var rwaMoviesContext = _context.Videos.Include(v => v.Genre).Include(v => v.Image);
-            return View(await rwaMoviesContext.ToListAsync());
+            int pageSize = 4;
+            int pageNumber = page ?? 1;
+
+            var rwaMoviesContextPaged =
+                await _context.Videos
+                .Include(v => v.Genre)
+                .Include(v => v.Image)
+                .OrderBy(v => v.CreatedAt)
+                .ToListAsync();
+
+            return View(rwaMoviesContextPaged.ToPagedList(pageNumber, pageSize));
         }
 
         // GET: Videos/Details/5
@@ -171,18 +181,26 @@ namespace RWA_MVC_project.Controllers
         [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Videos == null)
+            try
             {
-                return Problem("Entity set 'RwaMoviesContext.Videos'  is null.");
+                if (_context.Videos == null)
+                {
+                    return Problem("Entity set 'RwaMoviesContext.Videos'  is null.");
+                }
+                var video = await _context.Videos.FindAsync(id);
+                if (video != null)
+                {
+                    _context.Videos.Remove(video);
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            var video = await _context.Videos.FindAsync(id);
-            if (video != null)
+            catch (Exception ex)
             {
-                _context.Videos.Remove(video);
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Index");
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool VideoExists(int id)

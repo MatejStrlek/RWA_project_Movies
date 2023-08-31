@@ -151,18 +151,26 @@ namespace RWA_MVC_project.Controllers
         [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Tags == null)
+            try
             {
-                return Problem("Entity set 'RwaMoviesContext.Tags'  is null.");
+                if (_context.Tags == null)
+                {
+                    return Problem("Entity set 'RwaMoviesContext.Tags'  is null.");
+                }
+                var tag = await _context.Tags.FindAsync(id);
+                if (tag != null)
+                {
+                    _context.Tags.Remove(tag);
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            var tag = await _context.Tags.FindAsync(id);
-            if (tag != null)
+            catch (Exception ex)
             {
-                _context.Tags.Remove(tag);
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Index");
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool TagExists(int id)

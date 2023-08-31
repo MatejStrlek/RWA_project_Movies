@@ -198,18 +198,26 @@ namespace RWA_MVC_project.Controllers
         [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Users == null)
+            try
             {
-                return Problem("Entity set 'RwaMoviesContext.Users'  is null.");
+                if (_context.Users == null)
+                {
+                    return Problem("Entity set 'RwaMoviesContext.Users'  is null.");
+                }
+                var user = await _context.Users.FindAsync(id);
+                if (user != null)
+                {
+                    _context.Users.Remove(user);
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            var user = await _context.Users.FindAsync(id);
-            if (user != null)
+            catch (Exception ex)
             {
-                _context.Users.Remove(user);
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Index");
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool UserExists(int id)
