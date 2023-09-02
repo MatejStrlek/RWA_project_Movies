@@ -44,6 +44,8 @@ namespace RWA_MVC_project.Controllers
             var video = await _context.Videos
                 .Include(v => v.Genre)
                 .Include(v => v.Image)
+                .Include(v => v.VideoTags)
+                .ThenInclude(vt => vt.Tag)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (video == null)
             {
