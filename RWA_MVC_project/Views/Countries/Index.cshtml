@@ -1,5 +1,6 @@
-﻿@model IEnumerable<RWA_MVC_project.Models.Country>
+﻿@model CountryViewModel
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using X.PagedList.Mvc.Core
 
 @{
     ViewData["Title"] = "Index";
@@ -38,7 +39,7 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+        @foreach (var item in Model.ModelList) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Code)
@@ -58,3 +59,34 @@
 }
     </tbody>
 </table>
+
+<div class="pagination-container">
+    @Html.PagedListPager(Model.PagedList, page => Url.Action("Index", new { page }))
+</div>
+
+<style>
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .pagination a {
+        color: #007bff;
+        text-decoration: none;
+        padding: 5px 10px;
+        margin: 0 5px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+
+    .pagination .active a {
+        background-color: #007bff;
+        color: #fff;
+        border: 1px solid #007bff;
+    }
+
+    .pagination a:hover {
+        background-color: #f5f5f5;
+    }
+</style>

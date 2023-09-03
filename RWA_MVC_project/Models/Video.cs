@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace RWA_MVC_project.Models;
 
@@ -21,6 +19,7 @@ public partial class Video
     [Required(ErrorMessage = "Video length is required")]
     public int TotalSeconds { get; set; }
 
+    [RegularExpression(@"^(http|https)://[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,3}(/\S*)?$", ErrorMessage = "Invalid URL")]
     public string? StreamingUrl { get; set; }
 
     public int? ImageId { get; set; }

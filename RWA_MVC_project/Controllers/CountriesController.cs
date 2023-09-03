@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using RWA_MVC_project.Filters;
 using RWA_MVC_project.Models;
+using X.PagedList;
 
 namespace RWA_MVC_project.Controllers
 {
@@ -16,11 +17,24 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Countries
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page)
         {
-              return _context.Countries != null ? 
-                          View(await _context.Countries.ToListAsync()) :
-                          Problem("Entity set 'RwaMoviesContext.Countries'  is null.");
+            int pageSize = 5;
+            int pageNumber = page ?? 1;
+
+            var pagedModel = await _context.Countries.ToPagedListAsync(pageNumber, pageSize);
+            var viewModel = new CountryViewModel
+            {
+                ModelList = pagedModel,
+                PagedList = pagedModel
+            };          
+
+            if (viewModel == null)
+            {
+                return Problem("Entity set 'RwaMoviesContext.Countries' is null.");
+            }
+
+            return View(viewModel);
         }
 
         // GET: Countries/Details/5

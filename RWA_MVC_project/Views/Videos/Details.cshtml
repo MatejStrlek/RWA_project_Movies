@@ -54,6 +54,7 @@
             @Html.DisplayFor(model => model.Image.Content)
         </dd>
     </dl>
+
     <h4>Tags:</h4>
     @if (Model.VideoTags.Any()){
         <ul>
@@ -71,7 +72,8 @@
 <div>
 @if (isAdmin)
     {
-        <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
+        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-secondary">Edit</a>
+        <a asp-action="Delete" asp-route-id="@Model?.Id" class="btn btn-danger">Delete</a>
     }
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn btn-outline-primary">Back to List</a>
 </div>
