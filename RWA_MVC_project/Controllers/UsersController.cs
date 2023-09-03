@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol.Plugins;
 using RWA_MVC_project.Filters;
 using RWA_MVC_project.Models;
+using System.Drawing.Printing;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -23,8 +24,26 @@ namespace RWA_MVC_project.Controllers
         [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Index()
         {
-            var rwaMoviesContext = _context.Users.Include(u => u.CountryOfResidence);
-            return View(await rwaMoviesContext.ToListAsync());
+            if (Request.Cookies.ContainsKey("searchUsers"))
+            {
+                string searchText = Request.Cookies["searchUsers"];
+
+                var rwaUsersContext = _context.Users.Include(u => u.CountryOfResidence)
+                                    .Where(u => u.FirstName.Contains(searchText)
+                                    || u.LastName.Contains(searchText)
+                                    || u.Username.Contains(searchText)
+                                    || u.CountryOfResidence.Name.Contains(searchText));
+
+                ViewData["searchUsers"] = searchText;
+
+                 return View(await rwaUsersContext.ToListAsync());
+            }
+            else
+            {
+                var rwaUsersContext = _context.Users.Include(u => u.CountryOfResidence);
+
+                return View(await rwaUsersContext.ToListAsync());
+            }                     
         }
 
         // GET: Users/Details/5
@@ -96,6 +115,13 @@ namespace RWA_MVC_project.Controllers
         [TypeFilter(typeof(AdministratorFilter))]
         public IActionResult Search(string searchText)
         {
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                Response.Cookies.Append("searchUsers", searchText);
+            }
+
+            searchText = !string.IsNullOrEmpty(searchText) ? searchText : Request.Cookies["searchUsers"];
+
             var users = _context.Users
                 .Include(u => u.CountryOfResidence)
                 .Where(u => u.Username.Contains(searchText) ||
@@ -106,6 +132,12 @@ namespace RWA_MVC_project.Controllers
                 u.CountryOfResidence.Name.Contains(searchText));
 
             return View("Index", users);
+        }
+
+        public IActionResult ClearSearch()
+        {
+            Response.Cookies.Delete("searchUsers");
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Users/Edit/5

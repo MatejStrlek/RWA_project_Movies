@@ -7,6 +7,7 @@
 <form asp-controller="Users" asp-action="Search" method="get">
     <input type="search" name="searchText" placeholder="Search..." />
     <button type="submit" class="btn btn-primary">Search</button>
+    <a asp-action="ClearSearch" asp-controller="Users" class="btn btn-outline-info">Show all users</a>
 </form>
 
 <p>
