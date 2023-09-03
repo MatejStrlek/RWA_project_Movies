@@ -8,7 +8,7 @@
 }
 
 <form asp-controller="Videos" asp-action="Search" method="get">
-    <input type="search" name="searchText" placeholder="Search..." />
+    <input type="search" name="searchText" placeholder="Search..." value="@ViewData["searchVideo"]" />
     <button type="submit" class="btn btn-primary">Search</button>
 </form>
 

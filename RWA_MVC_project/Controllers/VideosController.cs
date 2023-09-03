@@ -84,9 +84,12 @@ namespace RWA_MVC_project.Controllers
             return View(video);
         }
 
-        public IActionResult Search(string searchText)
+        public IActionResult Search(string searchText, int? page)
         {
-            var videos = _context.Videos
+            int pageSize = 4;
+            int pageNumber = page ?? 1;
+
+            var videosQuery = _context.Videos
                 .Include(v => v.Genre)
                 .Include(v => v.Image)
                 .Include(v => v.VideoTags)
@@ -95,7 +98,9 @@ namespace RWA_MVC_project.Controllers
                 v.VideoTags.Any(vt => vt.Tag.Name.Contains(searchText))
                 );          
 
-            return View("Index", videos);
+            var videosPaged = videosQuery.ToPagedList(pageNumber, pageSize);
+
+            return View("Index", videosPaged);
         }
 
         // GET: Videos/Edit/5

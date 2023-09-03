@@ -79,13 +79,24 @@ namespace RWA_MVC_project.Controllers
             return View(country);
         }
 
-        public IActionResult Search(string searchText)
+        public IActionResult Search(string searchText, int? page)
         {
-            var countries = _context.Countries
+            int pageSize = 5;
+            int pageNumber = page ?? 1;
+
+            var countriesQuery = _context.Countries
                 .Where(c => c.Name.Contains(searchText) ||
                 c.Code.Contains(searchText));
 
-            return View("Index", countries);
+            var countriesPaged = countriesQuery.ToPagedList(pageNumber, pageSize);
+
+            var viewModelCountries = new CountryViewModel
+            {
+                ModelList = countriesPaged,
+                PagedList = countriesPaged
+            };
+
+            return View("Index", viewModelCountries);
         }
 
         // GET: Countries/Edit/5
