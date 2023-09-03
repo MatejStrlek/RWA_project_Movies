@@ -23,14 +23,33 @@ namespace RWA_MVC_project.Controllers
             int pageSize = 4;
             int pageNumber = page ?? 1;
 
-            var rwaMoviesContextPaged =
-                await _context.Videos
-                .Include(v => v.Genre)
-                .Include(v => v.Image)
-                .OrderBy(v => v.CreatedAt)
-                .ToListAsync();
+            if (Request.Cookies.ContainsKey("searchVideos"))
+            {
+                string searchText = Request.Cookies["searchVideos"];
 
-            return View(rwaMoviesContextPaged.ToPagedList(pageNumber, pageSize));
+                var videoQuery = _context.Videos
+                    .Include(v => v.Genre)
+                    .Include(v => v.Image)
+                    .Where(v => v.Name.Contains(searchText) ||
+                                v.Genre.Name.Contains(searchText))
+                    .OrderBy(v => v.CreatedAt);
+
+                var results = await videoQuery.ToListAsync();
+
+                ViewData["searchVideos"] = searchText;
+
+                return View(results.ToPagedList(pageNumber, pageSize));
+            }
+            else
+            {
+                var rwaMoviesContextPaged = await _context.Videos
+                    .Include(v => v.Genre)
+                    .Include(v => v.Image)
+                    .OrderBy(v => v.CreatedAt)
+                    .ToListAsync();
+
+                return View(rwaMoviesContextPaged.ToPagedList(pageNumber, pageSize));
+            }
         }
 
         // GET: Videos/Details/5
@@ -89,6 +108,13 @@ namespace RWA_MVC_project.Controllers
             int pageSize = 4;
             int pageNumber = page ?? 1;
 
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                Response.Cookies.Append("searchVideos", searchText);
+            }
+
+            searchText = !string.IsNullOrEmpty(searchText) ? searchText : Request.Cookies["searchVideos"];
+
             var videosQuery = _context.Videos
                 .Include(v => v.Genre)
                 .Include(v => v.Image)
@@ -101,6 +127,12 @@ namespace RWA_MVC_project.Controllers
             var videosPaged = videosQuery.ToPagedList(pageNumber, pageSize);
 
             return View("Index", videosPaged);
+        }
+
+        public IActionResult ClearSearch()
+        {
+            Response.Cookies.Delete("searchVideos");
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Videos/Edit/5
