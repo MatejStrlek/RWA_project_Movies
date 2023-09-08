@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RWA_MVC_project.Models;
+using RWA_MVC_project.Repos;
+using RWA_MVC_project.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,8 @@ builder.Services.AddDbContext<RwaMoviesContext>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IMailSender, MailSender>();
+builder.Services.AddScoped<IEmailMessageRepo, EmailMessageRepo>();
 
 var app = builder.Build();
 

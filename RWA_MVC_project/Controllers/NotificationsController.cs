@@ -18,8 +18,13 @@ namespace RWA_MVC_project.Controllers
         // GET: Notifications
         public async Task<IActionResult> Index()
         {
-              return _context.Notifications != null ? 
-                          View(await _context.Notifications.ToListAsync()) :
+            string usernamefromCookie = Request.Cookies["username"];
+            var user = _context.Users.FirstOrDefault(u => u.Username == usernamefromCookie);
+
+            return _context.Notifications != null ? 
+                          View(await _context.Notifications
+                          .Where(n => n.ReceiverEmail == user.Email)
+                          .ToListAsync()) :
                           Problem("Entity set 'RwaMoviesContext.Notifications'  is null.");
         }
 
@@ -61,58 +66,7 @@ namespace RWA_MVC_project.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(notification);
-        }
-
-        // GET: Notifications/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.Notifications == null)
-            {
-                return NotFound();
-            }
-
-            var notification = await _context.Notifications.FindAsync(id);
-            if (notification == null)
-            {
-                return NotFound();
-            }
-            return View(notification);
-        }
-
-        // POST: Notifications/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CreatedAt,ReceiverEmail,Subject,Body,SentAt")] Notification notification)
-        {
-            if (id != notification.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(notification);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!NotificationExists(notification.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(notification);
-        }
+        }       
 
         // GET: Notifications/Delete/5
         public async Task<IActionResult> Delete(int? id)
