@@ -28,6 +28,12 @@ namespace RWA_MVC_project.Controllers
 
                 if (hashed == userFromDb.PwdHash)
                 {
+                    if (userFromDb.DeletedAt != null)
+                    {
+                        ModelState.AddModelError(String.Empty, "Account is deactivated. Contact admin");
+                        return View(nameof(Login));
+                    }
+
                     string cookieUsername = userFromDb.Username;
 
                     CookieOptions cookieOptions = new CookieOptions
@@ -36,7 +42,7 @@ namespace RWA_MVC_project.Controllers
                         HttpOnly = true
                     };
                     Response.Cookies.Append("username", cookieUsername, cookieOptions);
-
+                    
                     return Redirect("/Videos");
                 }
                 else

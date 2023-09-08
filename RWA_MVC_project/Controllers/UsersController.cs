@@ -234,12 +234,60 @@ namespace RWA_MVC_project.Controllers
             {
                 if (_context.Users == null)
                 {
-                    return Problem("Entity set 'RwaMoviesContext.Users'  is null.");
+                    return Problem("Entity set 'RwaMoviesContext.Users' is null.");
                 }
                 var user = await _context.Users.FindAsync(id);
                 if (user != null)
                 {
                     _context.Users.Remove(user);
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Index");
+            }
+        }
+
+        [TypeFilter(typeof(AdministratorFilter))]
+        public async Task<IActionResult> Deactivate(int? id)
+        {
+            if (id == null || _context.Users == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _context.Users
+                .Include(u => u.CountryOfResidence)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
+        public async Task<IActionResult> DeactivateConfirmed(int id)
+        {
+            try
+            {
+                if(_context.Users == null)
+                {
+                    return Problem("Entity set 'RwaMoviesContext.Users' is null.");
+                }
+
+                var user = await _context.Users.FindAsync(id);
+                if (user != null)
+                {
+                    user.DeletedAt = DateTime.Now;
+                    _context.Users.Update(user);                    
                 }
 
                 await _context.SaveChangesAsync();
