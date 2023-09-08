@@ -284,6 +284,13 @@ namespace RWA_MVC_project.Controllers
                 }
 
                 var user = await _context.Users.FindAsync(id);
+
+                if(user.DeletedAt != null)
+                {
+                    TempData["ErrorMessage"] = "User is already deactivated.";
+                    return RedirectToAction(nameof(Index));
+                }
+
                 if (user != null)
                 {
                     user.DeletedAt = DateTime.Now;
