@@ -10,13 +10,6 @@ namespace RWA_MVC_project.Services
 
     public class MailSender: IMailSender
     {
-        private readonly RwaMoviesContext _context;
-
-        public MailSender(RwaMoviesContext context)
-        {
-             _context = context;
-        }
-
         public void SendMail(string sender, string receiver, string subject, string message)
         {
             MailMessage messageToSend = new();
@@ -29,16 +22,10 @@ namespace RWA_MVC_project.Services
             MailAddress to = new(receiver);
             messageToSend.To.Add(to);
 
-            client.Send(messageToSend);
+            messageToSend.Subject = subject;
+            messageToSend.Body = message;
 
-            _context.Notifications.Add(new Notification { 
-                CreatedAt = DateTime.Now, 
-                ReceiverEmail = receiver,
-                Subject = subject,
-                Body = message,
-                SentAt = DateTime.Now
-            });
-            _context.SaveChanges();
+            client.Send(messageToSend);
         }
     }
 }

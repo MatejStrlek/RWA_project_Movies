@@ -2,17 +2,25 @@
 using Microsoft.EntityFrameworkCore;
 using RWA_MVC_project.Filters;
 using RWA_MVC_project.Models;
+using RWA_MVC_project.Repos;
+using RWA_MVC_project.Services;
 
 namespace RWA_MVC_project.Controllers
 {
     [TypeFilter(typeof(LoginFilter))]
     public class NotificationsController : Controller
     {
-        private readonly RwaMoviesContext _context;
+        private const string SenderMail = "RWA_project@algebra.hr";
 
-        public NotificationsController(RwaMoviesContext context)
+        private readonly RwaMoviesContext _context;
+        private readonly IMailSender _mailSender;
+        private readonly IEmailMessageRepo _emailMessageRepo;
+
+        public NotificationsController(RwaMoviesContext context, IMailSender mailSender, IEmailMessageRepo emailMessageRepo)
         {
             _context = context;
+            _mailSender = mailSender;
+            _emailMessageRepo = emailMessageRepo;
         }
 
         // GET: Notifications
@@ -47,8 +55,16 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Notifications/Create
+        [TypeFilter(typeof(AdministratorFilter))]
         public IActionResult Create()
         {
+            string usernamefromCookie = Request.Cookies["username"];
+            var user = _context.Users.FirstOrDefault(u => u.Username == usernamefromCookie);
+
+            ViewData["Emails"] = _context.Users.Select(u => u.Email)
+                   .Where(e => e != user.Email)
+                   .ToList();
+
             return View();
         }
 
@@ -57,16 +73,29 @@ namespace RWA_MVC_project.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(AdministratorFilter))]
         public async Task<IActionResult> Create([Bind("Id,CreatedAt,ReceiverEmail,Subject,Body,SentAt")] Notification notification)
         {
             if (ModelState.IsValid)
             {
+                string usernamefromCookie = Request.Cookies["username"];
+                var user = _context.Users.FirstOrDefault(u => u.Username == usernamefromCookie);
+
+                var formData = HttpContext.Request.Form;
+
+                string subject = formData["Subject"];
+                string body = formData["Body"];
+                string receiverEmail = formData["ReceiverEmail"];               
+
+                if (user != null)
+                    _mailSender.SendMail(SenderMail, receiverEmail, subject, body);
+
                 _context.Add(notification);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return View("NotificationSendResult");
             }
             return View(notification);
-        }       
+        }
 
         // GET: Notifications/Delete/5
         public async Task<IActionResult> Delete(int? id)

@@ -12,16 +12,11 @@ namespace RWA_MVC_project.Controllers
     [TypeFilter(typeof(LoginFilter))]
     public class VideosController : Controller
     {
-        private const string SenderMail = "RWA_project@algebra.hr";
-        private readonly RwaMoviesContext _context;
-        private readonly IMailSender _mailSender;
-        private readonly IEmailMessageRepo _emailMessageRepo;
+        private readonly RwaMoviesContext _context;       
 
-        public VideosController(RwaMoviesContext context, IMailSender mailSender, IEmailMessageRepo emailMessageRepo)
+        public VideosController(RwaMoviesContext context)
         {
             _context = context;
-            _mailSender = mailSender;
-            _emailMessageRepo = emailMessageRepo;
         }
 
         // GET: Videos
@@ -252,19 +247,6 @@ namespace RWA_MVC_project.Controllers
         private bool VideoExists(int id)
         {
           return (_context.Videos?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
-
-        public IActionResult TestMailSender()
-        {
-            var messages = _emailMessageRepo.GetEmailMessages();
-
-            string usernamefromCookie = Request.Cookies["username"];
-            var user = _context.Users.FirstOrDefault(u => u.Username == usernamefromCookie);
-
-            if(user != null)
-                _mailSender.SendMail(SenderMail, user.Email, "Subject for notification", "Body of notification");
-
-            return View("TestMailSendingResult");
         }
     }
 }
