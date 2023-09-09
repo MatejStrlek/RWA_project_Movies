@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace RWA_API_project.Models;
+﻿namespace RWA_API_project.Models;
 
 public partial class Genre
 {
