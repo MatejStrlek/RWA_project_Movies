@@ -6,6 +6,7 @@ using RWA_MVC_project.Filters;
 using RWA_MVC_project.Models;
 using RWA_MVC_project.Repos;
 using RWA_MVC_project.Services;
+using X.PagedList;
 
 namespace RWA_MVC_project.Controllers
 {
@@ -23,34 +24,72 @@ namespace RWA_MVC_project.Controllers
         public async Task<IActionResult> Index(int? page)
         {
             int pageSize = 4;
-            int pageNumber = page ?? 1;
+
+            ViewData["page"] = page ?? 1;
+            ViewData["size"] = pageSize;
+            ViewData["pages"] = _context.Genres.Count() / pageSize;
 
             if (Request.Cookies.ContainsKey("searchVideos"))
             {
                 string searchText = Request.Cookies["searchVideos"];
 
-                var videoQuery = _context.Videos
+                var videoQuery = await _context.Videos
                     .Include(v => v.Genre)
                     .Include(v => v.Image)
                     .Where(v => v.Name.Contains(searchText) ||
                                 v.Genre.Name.Contains(searchText))
-                    .OrderBy(v => v.CreatedAt);
-
-                var results = await videoQuery.ToListAsync();
+                    .OrderBy(v => v.CreatedAt)
+                    .ToPagedListAsync(page ?? 1, pageSize);
 
                 ViewData["searchVideos"] = searchText;
 
-                return View(results.ToPagedList(pageNumber, pageSize));
+                return View(videoQuery);
             }
             else
             {
-                var rwaMoviesContextPaged = await _context.Videos
+                var videoQuery = await _context.Videos
                     .Include(v => v.Genre)
                     .Include(v => v.Image)
                     .OrderBy(v => v.CreatedAt)
-                    .ToListAsync();
+                    .ToPagedListAsync(page ?? 1, pageSize);
 
-                return View(rwaMoviesContextPaged.ToPagedList(pageNumber, pageSize));
+                return View(videoQuery);
+            }
+        }
+
+        public async Task<IActionResult> VideosPagingPartial(int? page)
+        {
+            int pageSize = 4;
+
+            ViewData["page"] = page ?? 1;
+            ViewData["size"] = pageSize;
+            ViewData["pages"] = _context.Genres.Count() / pageSize;
+
+            if (Request.Cookies.ContainsKey("searchVideos"))
+            {
+                string searchText = Request.Cookies["searchVideos"];
+
+                var videoQuery = await _context.Videos
+                    .Include(v => v.Genre)
+                    .Include(v => v.Image)
+                    .Where(v => v.Name.Contains(searchText) ||
+                                v.Genre.Name.Contains(searchText))
+                    .OrderBy(v => v.CreatedAt)
+                    .ToPagedListAsync(page ?? 1, pageSize);
+
+                ViewData["searchVideos"] = searchText;
+
+                return PartialView("_VideosPagingPartial", videoQuery);
+            }
+            else
+            {
+                var videoQuery = await _context.Videos
+                    .Include(v => v.Genre)
+                    .Include(v => v.Image)
+                    .OrderBy(v => v.CreatedAt)
+                    .ToPagedListAsync(page ?? 1, pageSize);
+
+                return PartialView("_VideosPagingPartial", videoQuery);
             }
         }
 
