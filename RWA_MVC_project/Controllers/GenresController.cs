@@ -2,8 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using RWA_MVC_project.Filters;
 using RWA_MVC_project.Models;
-using System.Drawing;
-using System.Security.Policy;
 using X.PagedList;
 
 namespace RWA_MVC_project.Controllers
