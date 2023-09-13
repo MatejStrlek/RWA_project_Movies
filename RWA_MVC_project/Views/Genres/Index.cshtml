@@ -2,6 +2,10 @@
 
 @{
     ViewData["Title"] = "Index";
+    var page = (int?)ViewData["page"];
+    var size = (int?)ViewData["size"];
+    var pages = (int?)ViewData["pages"];
+
     bool isAdmin = HttpContextAccessor.HttpContext.Request.Cookies["username"] == "admin";
 }
 
@@ -36,23 +40,53 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @if(isAdmin){
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
-                }
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Details</a>
-            </td>
-        </tr>
-}
+    <tbody id="genre-table-body">
+        <partial name="_GenrePagingPartial" />
     </tbody>
 </table>
+
+<div class="btn-group">
+    @for (var i = 1; i <= pages + 1; i++)
+    {
+        var currClass = page == i ? "btn-primary" : "btn-outline-primary";
+        <a asp-action="Index"
+           asp-route-page="@i"
+           asp-route-size="@size"
+           data-page="@i"
+           class="pager-btn btn @currClass">@(i)</a>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(".pager-btn").click(function (event) {
+            console.log("Pager button clicked");
+            event.preventDefault();
+
+            var page = $(this).data("page");
+
+            var ajaxData = {
+                page: page,
+                size: @size
+            };
+
+            $.ajax({
+                type: "GET",
+                url: "/Genres/GenrePagingPartial",
+                data: ajaxData,
+                success: function (data) {
+                    $("#genre-table-body").html(data);
+
+                    $(".pager-btn").removeClass("btn-primary");
+                    $(".pager-btn").addClass("btn-outline-primary");
+
+                    $(".pager-btn[data-page=" + page + "]").removeClass("btn-outline-primary");
+                    $(".pager-btn[data-page=" + page + "]").addClass("btn-primary");
+                },
+                error: function (data) {
+                    console.error("Ajax GET error", data);
+                }
+            });
+        });
+    </script>
+}

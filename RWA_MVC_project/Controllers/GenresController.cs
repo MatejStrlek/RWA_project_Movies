@@ -2,6 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using RWA_MVC_project.Filters;
 using RWA_MVC_project.Models;
+using System.Drawing;
+using System.Security.Policy;
+using X.PagedList;
 
 namespace RWA_MVC_project.Controllers
 {
@@ -16,11 +19,34 @@ namespace RWA_MVC_project.Controllers
         }
 
         // GET: Genres
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page)
         {
-              return _context.Genres != null ? 
-                          View(await _context.Genres.ToListAsync()) :
-                          Problem("Entity set 'RwaMoviesContext.Genres'  is null.");
+            const int pageSize = 3;
+
+            ViewData["page"] = page ?? 1;
+            ViewData["size"] = pageSize;
+            ViewData["pages"] = _context.Genres.Count() / pageSize;
+
+            var genres = await _context.Genres
+                        .OrderBy(g => g.Name)
+                        .ToPagedListAsync(page ?? 1, pageSize);
+
+            return View(genres);
+        }
+
+        public async Task<IActionResult> GenrePagingPartial(int? page)
+        {
+            const int pageSize = 3;
+
+            ViewData["page"] = page ?? 1;
+            ViewData["size"] = pageSize;
+            ViewData["pages"] = _context.Genres.Count() / pageSize;
+
+            var genres = await _context.Genres
+                        .OrderBy(g => g.Name)
+                        .ToPagedListAsync(page ?? 1, pageSize);
+
+            return PartialView("_GenrePagingPartial", genres);
         }
 
         // GET: Genres/Details/5
