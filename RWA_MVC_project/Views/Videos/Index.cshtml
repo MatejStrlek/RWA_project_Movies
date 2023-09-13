@@ -3,7 +3,6 @@
 @using PagedList;
 
 @{
-    ViewData["Title"] = "Index";
     bool isAdmin = HttpContextAccessor.HttpContext.Request.Cookies["username"] == "admin";
 }
 

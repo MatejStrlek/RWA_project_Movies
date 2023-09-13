@@ -117,6 +117,8 @@ namespace RWA_MVC_project.Controllers
 
             searchText = !string.IsNullOrEmpty(searchText) ? searchText : Request.Cookies["searchVideos"];
 
+            ViewData["searchVideos"] = searchText;
+
             var videosQuery = _context.Videos
                 .Include(v => v.Genre)
                 .Include(v => v.Image)

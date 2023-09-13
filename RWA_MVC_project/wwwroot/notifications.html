@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications</title>
+</head>
+
+<body>
+    <h1>Notifications</h1>
+    <ul id="notification-list"></ul>
+
+    <script>
+        // JavaScript code to fetch and display notifications
+        document.addEventListener("DOMContentLoaded", function () {
+            fetchNotifications();
+        });
+
+        async function fetchNotifications() {
+            try {
+                const response = await fetch("/api/Notifications");
+                const notifications = await response.json();
+
+                const notificationList = document.getElementById("notification-list");
+                notifications.forEach((notification) => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = notification.text;
+                    notificationList.appendChild(listItem);
+                });
+            } catch (error) {
+                console.error("Error fetching notifications:", error);
+            }
+        }
+    </script>
+</body>
+</html>
