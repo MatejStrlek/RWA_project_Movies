@@ -26,7 +26,14 @@ namespace RWA_API_project.Controllers
           {
               return NotFound();
           }
-            return _mapper.Map<List<VideoVM>>(await _context.Videos.ToListAsync());
+
+          var videos = await _context.Videos
+                .OrderBy(x => x.Id)
+                .ThenBy(x => x.Name)
+                .Include(x => x.TotalSeconds)
+                .ToListAsync();
+
+            return _mapper.Map<List<VideoVM>>(videos);
         }
 
         // GET: api/Videos/5
@@ -120,6 +127,28 @@ namespace RWA_API_project.Controllers
         private bool VideoExists(int id)
         {
             return (_context.Videos?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        [HttpGet("[action]")]
+        public async Task<ActionResult<IEnumerable<VideoVM>>> Search(int page, int size, string? filter)
+        {
+            IEnumerable<Video> filtered;
+
+            var videos = await _context.Videos.ToListAsync();
+
+            if (filter != null)
+            {
+                filtered = videos.Where(x =>
+                    x.Name.Contains(filter, StringComparison.InvariantCultureIgnoreCase));
+            }
+            else
+            {
+                filtered = videos;
+            }
+
+            var results = filtered.Skip((page - 1) * size).Take(size);
+
+            return Ok(_mapper.Map<List<VideoVM>>(results));
         }
     }
 }
