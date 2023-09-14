@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RWA_API_project.Models;
 
@@ -9,26 +10,28 @@ namespace RWA_API_project.Controllers
     public class GenresController : ControllerBase
     {
         private readonly RwaMoviesContext _context;
+        private readonly IMapper _mapper;
 
-        public GenresController(RwaMoviesContext context)
+        public GenresController(RwaMoviesContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Genres
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Genre>>> GetGenres()
+        public async Task<ActionResult<IEnumerable<GenreVM>>> GetGenres()
         {
           if (_context.Genres == null)
           {
               return NotFound();
           }
-            return await _context.Genres.ToListAsync();
+            return _mapper.Map<List<GenreVM>>(await _context.Genres.ToListAsync());
         }
 
         // GET: api/Genres/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Genre>> GetGenre(int id)
+        public async Task<ActionResult<GenreVM>> GetGenre(int id)
         {
           if (_context.Genres == null)
           {
@@ -41,14 +44,16 @@ namespace RWA_API_project.Controllers
                 return NotFound();
             }
 
-            return genre;
+            return _mapper.Map<GenreVM>(genre);
         }
 
         // PUT: api/Genres/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGenre(int id, Genre genre)
+        public async Task<IActionResult> PutGenre(int id, GenreVM genreVm)
         {
+            var genre = _mapper.Map<Genre>(genreVm);
+
             if (id != genre.Id)
             {
                 return BadRequest();
@@ -78,12 +83,15 @@ namespace RWA_API_project.Controllers
         // POST: api/Genres
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Genre>> PostGenre(Genre genre)
+        public async Task<ActionResult<Genre>> PostGenre(GenreVM genreVm)
         {
-          if (_context.Genres == null)
-          {
-              return Problem("Entity set 'RwaMoviesContext.Genres'  is null.");
-          }
+            var genre = _mapper.Map<Genre>(genreVm);
+
+            if (_context.Genres == null)
+            {
+                return Problem("Entity set 'RwaMoviesContext.Genres'  is null.");
+            }
+
             _context.Genres.Add(genre);
             await _context.SaveChangesAsync();
 
@@ -98,10 +106,19 @@ namespace RWA_API_project.Controllers
             {
                 return NotFound();
             }
+
             var genre = await _context.Genres.FindAsync(id);
+
             if (genre == null)
             {
                 return NotFound();
+            }
+
+            var referencedVideo = await _context.Videos.AnyAsync(v => v.GenreId == id);
+
+            if (referencedVideo)
+            {
+                return BadRequest("This genre is referenced by video/s");
             }
 
             _context.Genres.Remove(genre);

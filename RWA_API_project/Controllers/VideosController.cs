@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RWA_API_project.Models;
 
@@ -9,26 +10,28 @@ namespace RWA_API_project.Controllers
     public class VideosController : ControllerBase
     {
         private readonly RwaMoviesContext _context;
+        private readonly IMapper _mapper;
 
-        public VideosController(RwaMoviesContext context)
+        public VideosController(RwaMoviesContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Videos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Video>>> GetVideos()
+        public async Task<ActionResult<IEnumerable<VideoVM>>> GetVideos()
         {
           if (_context.Videos == null)
           {
               return NotFound();
           }
-            return await _context.Videos.ToListAsync();
+            return _mapper.Map<List<VideoVM>>(await _context.Videos.ToListAsync());
         }
 
         // GET: api/Videos/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Video>> GetVideo(int id)
+        public async Task<ActionResult<VideoVM>> GetVideo(int id)
         {
           if (_context.Videos == null)
           {
@@ -41,14 +44,16 @@ namespace RWA_API_project.Controllers
                 return NotFound();
             }
 
-            return video;
+            return _mapper.Map<VideoVM>(video);
         }
 
         // PUT: api/Videos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutVideo(int id, Video video)
+        public async Task<IActionResult> PutVideo(int id, VideoVM videoVm)
         {
+            var video = _mapper.Map<Video>(videoVm);
+
             if (id != video.Id)
             {
                 return BadRequest();
@@ -78,12 +83,14 @@ namespace RWA_API_project.Controllers
         // POST: api/Videos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Video>> PostVideo(Video video)
+        public async Task<ActionResult<Video>> PostVideo(VideoVM videoVm)
         {
-          if (_context.Videos == null)
-          {
-              return Problem("Entity set 'RwaMoviesContext.Videos'  is null.");
-          }
+            if (_context.Videos == null)
+            {
+                return Problem("Entity set 'RwaMoviesContext.Videos'  is null.");
+            }
+
+            var video = _mapper.Map<Video>(videoVm);
             _context.Videos.Add(video);
             await _context.SaveChangesAsync();
 

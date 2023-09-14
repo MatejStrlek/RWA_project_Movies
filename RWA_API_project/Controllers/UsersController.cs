@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RWA_API_project.Models;
 
@@ -9,26 +10,29 @@ namespace RWA_API_project.Controllers
     public class UsersController : ControllerBase
     {
         private readonly RwaMoviesContext _context;
+        private readonly IMapper _mapper;
 
-        public UsersController(RwaMoviesContext context)
+        public UsersController(RwaMoviesContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserVM>>> GetUsers()
         {
           if (_context.Users == null)
           {
               return NotFound();
           }
-            return await _context.Users.ToListAsync();
+
+            return _mapper.Map<List<UserVM>>(await _context.Users.ToListAsync());
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<UserVM>> GetUser(int id)
         {
           if (_context.Users == null)
           {
@@ -41,14 +45,16 @@ namespace RWA_API_project.Controllers
                 return NotFound();
             }
 
-            return user;
+            return _mapper.Map<UserVM>(user);
         }
 
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<IActionResult> PutUser(int id, UserVM userVm)
         {
+            var user = _mapper.Map<User>(userVm);
+
             if (id != user.Id)
             {
                 return BadRequest();
@@ -78,12 +84,14 @@ namespace RWA_API_project.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<User>> PostUser(UserVM userVm)
         {
-          if (_context.Users == null)
-          {
-              return Problem("Entity set 'RwaMoviesContext.Users'  is null.");
-          }
+            var user = _mapper.Map<User>(userVm);
+
+            if (_context.Users == null)
+            {
+                return Problem("Entity set 'RwaMoviesContext.Users'  is null.");
+            }
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 

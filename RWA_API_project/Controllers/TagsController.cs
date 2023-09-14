@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RWA_API_project.Models;
 
@@ -9,26 +10,28 @@ namespace RWA_API_project.Controllers
     public class TagsController : ControllerBase
     {
         private readonly RwaMoviesContext _context;
+        private readonly IMapper _mapper;
 
-        public TagsController(RwaMoviesContext context)
+        public TagsController(RwaMoviesContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Tags
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Tag>>> GetTags()
+        public async Task<ActionResult<IEnumerable<TagVM>>> GetTags()
         {
           if (_context.Tags == null)
           {
               return NotFound();
           }
-            return await _context.Tags.ToListAsync();
+            return _mapper.Map<List<TagVM>>(await _context.Tags.ToListAsync());
         }
 
         // GET: api/Tags/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Tag>> GetTag(int id)
+        public async Task<ActionResult<TagVM>> GetTag(int id)
         {
           if (_context.Tags == null)
           {
@@ -41,14 +44,16 @@ namespace RWA_API_project.Controllers
                 return NotFound();
             }
 
-            return tag;
+            return _mapper.Map<TagVM>(tag);
         }
 
         // PUT: api/Tags/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTag(int id, Tag tag)
+        public async Task<IActionResult> PutTag(int id, TagVM tagVm)
         {
+            var tag = _mapper.Map<Tag>(tagVm);
+
             if (id != tag.Id)
             {
                 return BadRequest();
@@ -78,12 +83,15 @@ namespace RWA_API_project.Controllers
         // POST: api/Tags
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Tag>> PostTag(Tag tag)
+        public async Task<ActionResult<Tag>> PostTag(TagVM tagVm)
         {
-          if (_context.Tags == null)
-          {
-              return Problem("Entity set 'RwaMoviesContext.Tags'  is null.");
-          }
+            var tag = _mapper.Map<Tag>(tagVm);
+
+            if (_context.Tags == null)
+            {
+                return Problem("Entity set 'RwaMoviesContext.Tags'  is null.");
+            }
+
             _context.Tags.Add(tag);
             await _context.SaveChangesAsync();
 
