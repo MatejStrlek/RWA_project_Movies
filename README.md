@@ -79,4 +79,4 @@ Implement pagination for video selection using AJAX techniques.
 ### Data Mapping  
 Implement data mapping between the data access layer and business layer for this module.  
 # Conclusion  
-This project encompasses an Integration Module, an Administrative Module, and a Public Module, each developed using ASP.NET Core technologies. The Integration Module handles core features like video content management and authentication. The Administrative Module focuses on administrative tasks, while the Public Module serves public-facing pages for user registration, login, video selection, and playback. The project is structured to meet both minimal and desired learning outcomes.
+This project encompasses an Integration Module, an Administrative Module, and a Public Module, each developed using ASP.NET Core technologies. The Integration Module handles core features like video content management and authentication. The Administrative Module focuses on administrative tasks, while the Public Module serves public-facing pages for user registration, login, video selection, and playback.
